@@ -1,0 +1,147 @@
+name: Wazo PBX
+shortDescription: Manage calls, users, voicemail, contacts, and CDR on the Wazo PBX
+description: |
+  MCP server for the Wazo PBX platform — control active calls, manage PBX users,
+  browse call history (CDR), handle voicemail, search contacts, and administer
+  extensions, lines, and devices.
+
+  ## Features
+
+  - **Call Control**: Make, answer, hang up, hold, mute, record, and transfer calls
+  - **User Management**: Create, update, delete, and list PBX and auth users
+  - **Call History (CDR)**: Browse and search Call Detail Records
+  - **Voicemail**: Access, move, and delete voicemail messages
+  - **Contacts**: Search directories and manage personal contacts
+  - **Infrastructure**: List extensions, SIP lines, and provisioned devices
+
+  ## What you'll need to connect
+
+  **Required:**
+
+  - **Wazo Username**: A Wazo auth username with API access
+  - **Wazo Password**: The corresponding password
+
+  **Optional:**
+
+  - **Wazo Host**: Hostname of the Wazo server (default: talk.sevi.io)
+  - **Wazo Port**: API port (default: 443)
+  - **Verify SSL**: Whether to verify TLS certificates (default: true)
+  - **Token Expiration**: Session token lifetime in seconds (default: 3600)
+
+metadata:
+  categories: Communication
+icon: https://wazo.io/favicon.ico
+repoURL: https://github.com/sevi-io/wazo-mcp
+
+runtime: containerized
+containerizedConfig:
+  image: ghcr.io/sevi-io/wazo-mcp:latest
+  port: 8000
+  path: /mcp
+
+env:
+  - key: WAZO_USERNAME
+    name: Wazo Username
+    required: true
+    sensitive: false
+    description: Wazo auth username with API access
+
+  - key: WAZO_PASSWORD
+    name: Wazo Password
+    required: true
+    sensitive: true
+    description: Password for the Wazo auth user
+
+  - key: WAZO_HOST
+    name: Wazo Host
+    required: false
+    sensitive: false
+    description: Hostname of the Wazo server (default talk.sevi.io)
+
+  - key: WAZO_PORT
+    name: Wazo Port
+    required: false
+    sensitive: false
+    description: API port (default 443)
+
+  - key: WAZO_VERIFY_SSL
+    name: Verify SSL
+    required: false
+    sensitive: false
+    description: Verify TLS certificates (default true)
+
+  - key: WAZO_TOKEN_EXPIRATION
+    name: Token Expiration
+    required: false
+    sensitive: false
+    description: Session token lifetime in seconds (default 3600)
+
+toolPreview:
+  - name: wazo_create_token
+    description: Authenticate with Wazo and obtain an API token
+    params:
+      username: Wazo auth username
+      password: Wazo auth password
+
+  - name: wazo_make_call
+    description: Originate a new call from a user to an extension
+    params:
+      source_user: UUID of the user making the call
+      destination_extension: Extension number to call
+      destination_context: Dial-plan context
+
+  - name: wazo_list_calls
+    description: List currently active calls on the PBX
+
+  - name: wazo_hangup_call
+    description: Hang up an active call
+    params:
+      call_id: ID of the call to hang up
+
+  - name: wazo_hold_call
+    description: Put a call on hold or take it off hold
+    params:
+      call_id: Call ID
+      hold: true to hold, false to unhold
+
+  - name: wazo_record_call
+    description: Start or stop recording an active call
+    params:
+      call_id: Call ID
+      action: start, stop, pause, or resume
+
+  - name: wazo_create_transfer
+    description: Initiate a call transfer (attended or blind)
+    params:
+      transferred_call: Call ID being transferred
+      initiator_call: Call ID of the initiator
+      context: Dial-plan context
+      exten: Destination extension
+
+  - name: wazo_list_cdr
+    description: List Call Detail Records (call history)
+
+  - name: wazo_list_users
+    description: List PBX users configured in wazo-confd
+
+  - name: wazo_create_user
+    description: Create a new PBX user
+    params:
+      firstname: First name of the user
+
+  - name: wazo_lookup_contacts
+    description: Search contacts across all configured directories
+    params:
+      term: Search term
+
+  - name: wazo_get_my_voicemail
+    description: Get the voicemail of the currently authenticated user
+
+  - name: wazo_list_extensions
+    description: List extensions configured on the PBX
+
+  - name: wazo_list_lines
+    description: List SIP/SCCP lines on the PBX
+
+  - name: wazo_list_devices
+    description: List provisioned phone devices
