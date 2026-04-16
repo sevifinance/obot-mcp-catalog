@@ -1,0 +1,85 @@
+name: ClickHouse All
+shortDescription: Full read-only access to all ClickHouse databases
+description: |
+  ClickHouse MCP server with full read-only access to the entire ClickHouse cluster.
+  Unlike the scoped "ClickHouse Sevi" server (restricted to sevi_documented),
+  this server can query all databases including sevi, sevi_documented, metadata,
+  and system tables.
+
+  ## Features
+
+  - **Full Database Access**: Query any database in the ClickHouse cluster
+  - **Schema Discovery**: Browse tables, columns, and comments across all databases
+  - **Analytics Queries**: Run read-only SQL queries against any table
+  - **System Introspection**: Access system tables for cluster health and query logs
+
+  ## What you'll need to connect
+
+  All credentials are pre-configured. No additional setup required.
+
+metadata:
+  categories: Analytics, Database
+icon: https://clickhouse.com/favicon.ico
+repoURL: https://github.com/ClickHouse/mcp-clickhouse
+env:
+  - key: CLICKHOUSE_HOST
+    name: ClickHouse Host
+    required: false
+    sensitive: false
+    value: clickhouse-clickhouse.clickhouse.svc.cluster.local
+    description: ClickHouse server hostname
+  - key: CLICKHOUSE_PORT
+    name: ClickHouse Port
+    required: false
+    sensitive: false
+    value: "8123"
+    description: ClickHouse HTTP port
+  - key: CLICKHOUSE_USER
+    name: ClickHouse User
+    required: false
+    sensitive: false
+    value: librechat_readonly
+    description: ClickHouse username
+  - key: CLICKHOUSE_PASSWORD
+    name: ClickHouse Password
+    required: false
+    sensitive: true
+    value: LR_R0_Ch_S3v1_2026!
+    description: ClickHouse password
+  - key: CLICKHOUSE_SECURE
+    name: ClickHouse Secure
+    required: false
+    sensitive: false
+    value: "false"
+    description: Use TLS for ClickHouse connection
+  - key: CLICKHOUSE_VERIFY
+    name: ClickHouse Verify
+    required: false
+    sensitive: false
+    value: "false"
+    description: Verify TLS certificate
+  - key: CLICKHOUSE_ALLOW_WRITE_ACCESS
+    name: Write Access
+    required: false
+    sensitive: false
+    value: "false"
+    description: Allow write queries (disabled for safety)
+runtime: uvx
+uvxConfig:
+  package: mcp-clickhouse
+toolPreview:
+  - name: run_select_query
+    description: Run a read-only SQL query against ClickHouse
+    params:
+      query: SQL SELECT query to execute
+  - name: list_databases
+    description: List all available databases
+  - name: list_tables
+    description: List tables in a database
+    params:
+      database: Database name
+  - name: describe_table
+    description: Get column details for a table
+    params:
+      database: Database name
+      table: Table name
