@@ -35,7 +35,7 @@ repoURL: https://github.com/sevi-io/wazo-mcp
 
 runtime: containerized
 containerizedConfig:
-  image: ghcr.io/sevi-io/wazo-mcp:latest
+  image: ghcr.io/sevifinance/mcp-wazo:latest
   port: 8000
   path: /mcp
 
