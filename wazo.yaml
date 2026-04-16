@@ -70,6 +70,12 @@ env:
     sensitive: false
     description: Verify TLS certificates (default true)
 
+  - key: WAZO_REVERSE_PROXY
+    name: Reverse Proxy
+    required: false
+    sensitive: false
+    description: Use Wazo nginx reverse proxy on port 443 (default false)
+
   - key: WAZO_TOKEN_EXPIRATION
     name: Token Expiration
     required: false
