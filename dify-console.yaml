@@ -1,0 +1,75 @@
+name: Dify Console
+shortDescription: Manage Dify apps, workflows, knowledge bases, models, and plugins
+description: |
+  MCP server for Dify Console API — create and configure apps, import/export DSL templates,
+  build knowledge bases, manage model providers, install plugins, and connect MCP servers
+  to Dify programmatically.
+
+  ## Features
+
+  - **App Management**: Create, update, delete, and query Dify applications
+  - **Workflow Builder**: Import/export DSL templates, configure workflow nodes
+  - **Knowledge Bases**: Create and manage datasets for RAG pipelines
+  - **Model Providers**: Configure and manage LLM model providers
+  - **Plugin Management**: Install and configure Dify plugins
+  - **MCP Server Integration**: Connect external MCP servers to Dify
+
+  ## What you'll need to connect
+
+  **Required:**
+
+  - **Dify Base URL**: The URL of your Dify instance (e.g. `https://dify.example.com`)
+  - **Dify Admin Email**: Email address of a Dify admin account
+  - **Dify Admin Password**: Password for the Dify admin account
+
+metadata:
+  categories: AI & ML, Developer Tools
+icon: https://dify.ai/favicon.ico
+repoURL: https://github.com/overpod/dify-mcp-server
+env:
+- key: DIFY_BASE_URL
+  name: Dify Base URL
+  required: true
+  sensitive: false
+  description: The URL of your Dify instance (e.g. https://dify.example.com)
+- key: DIFY_EMAIL
+  name: Dify Admin Email
+  required: true
+  sensitive: false
+  description: Email address of a Dify admin account
+- key: DIFY_PASSWORD
+  name: Dify Admin Password
+  required: true
+  sensitive: true
+  description: Password for the Dify admin account
+runtime: containerized
+containerizedConfig:
+  image: ghcr.io/sevifinance/dify-mcp-server:latest
+  port: 8000
+  path: /mcp
+toolPreview:
+- name: list_apps
+  description: List all apps in the Dify workspace
+- name: create_app
+  description: Create a new Dify application
+  params:
+    name: Application name
+    mode: App mode (chat, completion, workflow, agent-chat)
+- name: import_dsl
+  description: Import a DSL template to create or update an app
+  params:
+    yaml_content: DSL template content in YAML format
+- name: export_dsl
+  description: Export an app as a DSL template
+  params:
+    app_id: The ID of the app to export
+- name: list_datasets
+  description: List all knowledge base datasets
+- name: create_dataset
+  description: Create a new knowledge base dataset
+  params:
+    name: Dataset name
+- name: list_models
+  description: List available model providers and their models
+- name: list_plugins
+  description: List installed plugins
