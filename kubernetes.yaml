@@ -1,0 +1,161 @@
+name: Kubernetes
+shortDescription: Manage Kubernetes and OpenShift resources on Sevi cluster2
+description: |
+  Kubernetes MCP server (official [containers/kubernetes-mcp-server](https://github.com/containers/kubernetes-mcp-server))
+  pre-wired to Sevi's production Rancher cluster (**cluster2**). Full read/write access via a
+  dedicated ClusterRoleBinding on the `kubernetes-mcp` ServiceAccount in the `obot-mcp` namespace.
+
+  ## Features
+
+  - **Generic resources**: CRUD on any Kubernetes/OpenShift resource (Pods, Deployments, Services, CRDs, ...)
+  - **Pods**: list, get, delete, logs, top, exec, run
+  - **Namespaces & events**: list namespaces, view events
+  - **Helm**: install, list, uninstall releases
+  - **OpenShift Projects** and **Tekton** pipelines/tasks
+  - Native Go implementation (no kubectl/helm shelling out)
+
+  ## What you'll need to connect
+
+  All credentials are pre-configured. The MCP uses a baked-in kubeconfig that targets cluster2 via
+  the in-cluster API (`https://kubernetes.default.svc`) and authenticates with the `kubernetes-mcp`
+  ServiceAccount (bound to `cluster-admin`). No setup required.
+
+  To target a different cluster, override the **Kubeconfig** field with your own kubeconfig file.
+
+  ## Safety
+
+  This server has full read/write on cluster2. Use it carefully. If you want to restrict to
+  read-only or non-destructive operations, disable the relevant tools in the MCP's tool allowlist
+  after installation (e.g. `resources_delete`, `resources_create_or_update`, `pods_delete`,
+  `pods_exec`, `pods_run`, `helm_install`, `helm_uninstall`).
+
+metadata:
+  categories: Cloud & Infrastructure, DevOps
+icon: https://kubernetes.io/icons/icon-128x128.png
+repoURL: https://github.com/containers/kubernetes-mcp-server
+runtime: uvx
+uvxConfig:
+  package: kubernetes-mcp-server
+env:
+  - key: KUBECONFIG
+    name: Kubeconfig
+    required: true
+    sensitive: true
+    file: true
+    description: Kubeconfig file with cluster access. Default targets Sevi cluster2 via the `kubernetes-mcp` ServiceAccount (cluster-admin).
+    value: |-
+      apiVersion: v1
+      kind: Config
+      clusters:
+        - name: cluster2
+          cluster:
+            server: https://kubernetes.default.svc
+            certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJlakNDQVIrZ0F3SUJBZ0lCQURBS0JnZ3Foa2pPUFFRREFqQWtNU0l3SUFZRFZRUUREQmx5YTJVeUxYTmwKY25abGNpMWpZVUF4TnpJME5Ea3dOVFU0TUI0WERUSTBNRGd5TkRBNU1Ea3hPRm9YRFRNME1EZ3lNakE1TURreApPRm93SkRFaU1DQUdBMVVFQXd3WmNtdGxNaTF6WlhKMlpYSXRZMkZBTVRjeU5EUTVNRFUxT0RCWk1CTUdCeXFHClNNNDlBZ0VHQ0NxR1NNNDlBd0VIQTBJQUJQdDVJN1h6YWVmZDhOQUF4ZDV3bGVkcHEvOGZCbWp2T2d3VHNhRVEKRmdtTlBYWTBQRXBJSGdkaG9BK2VEVldXc1E0Uzh1TEVqdUJzbWRGb0dkVU9ENVdqUWpCQU1BNEdBMVVkRHdFQgovd1FFQXdJQ3BEQVBCZ05WSFJNQkFmOEVCVEFEQVFIL01CMEdBMVVkRGdRV0JCVERzd1doeUxUeEcvWUFhRms1CnQwd0o2dEVJdERBS0JnZ3Foa2pPUFFRREFnTkpBREJHQWlFQTk3dG9VMGg2UHJ3SDRhYzNOalVsb0w5aEoxVFAKTXcwc1V6MExTM3ZSRW5jQ0lRQzh3NnV6K29zdDdHWkp6TDlBN3VBMTlJaFFFQW8yNm9vOExVVXlBU2ZzOHc9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+      contexts:
+        - name: cluster2
+          context:
+            cluster: cluster2
+            user: kubernetes-mcp
+            namespace: default
+      current-context: cluster2
+      users:
+        - name: kubernetes-mcp
+          user:
+            token: eyJhbGciOiJSUzI1NiIsImtpZCI6ImV4NW9hdGpFNlNkTWtZTTk4VGFzQ1R1RnlzaUFhWmhZNjUwb0thVmxla3MifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJvYm90LW1jcCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJrdWJlcm5ldGVzLW1jcC10b2tlbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJrdWJlcm5ldGVzLW1jcCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjkyNjJhMWM3LThlZDAtNDVkNC04OGQwLTZiYmU0YWI1N2Q0ZCIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpvYm90LW1jcDprdWJlcm5ldGVzLW1jcCJ9.rqeLWcrO8yetsG7xIIQzuho6f0nKn08F9_KRsVXp_aBsFJLM5zr6axtC8MbAfb-TXPRSgf796oKIrMJg4Gl2NZjzixqDZZkGuivGAwKCmI7ThF0KyYlGL5fx99gVXcvkAGZWX_evKS-HJ19CF0Ajie8GiWpjnQshe3NzgJmgj6rnKTwOac7N16dJ4Q0maMmjNpxWUFm3KBFZudtIjoV-U7KLYF0Y-uSwXc1EeDVr6AByWoAhwyLiZZ7NQ3uMIxYgwRlnZ0okvTgfOG_7Tmcl1GxhOvJnyD5aTBrkxWmQRlzQuSssF9yDSmxlx-Wd_xprPe0g7EKjP-UeRTfSm_7L_Q
+toolPreview:
+  - name: configuration_view
+    description: Get the current Kubernetes configuration content as kubeconfig YAML
+  - name: namespaces_list
+    description: List all Kubernetes namespaces in the cluster
+  - name: events_list
+    description: List events in a namespace (or all namespaces)
+    params:
+      namespace: Optional namespace (omit for all)
+  - name: resources_list
+    description: List Kubernetes resources of any kind
+    params:
+      apiVersion: API version (e.g. v1, apps/v1, networking.k8s.io/v1)
+      kind: Resource kind (e.g. Pod, Deployment, Ingress)
+      namespace: Optional namespace for namespaced resources
+      labelSelector: Optional label selector
+  - name: resources_get
+    description: Get a specific Kubernetes resource
+    params:
+      apiVersion: API version
+      kind: Resource kind
+      name: Resource name
+      namespace: Namespace (for namespaced resources)
+  - name: resources_create_or_update
+    description: Create or update a Kubernetes resource from a YAML/JSON manifest
+    params:
+      resource: Resource manifest (YAML or JSON string)
+  - name: resources_delete
+    description: Delete a Kubernetes resource
+    params:
+      apiVersion: API version
+      kind: Resource kind
+      name: Resource name
+      namespace: Namespace
+  - name: pods_list
+    description: List pods in all namespaces
+    params:
+      labelSelector: Optional label selector
+  - name: pods_list_in_namespace
+    description: List pods in a specific namespace
+    params:
+      namespace: Namespace to list pods in
+      labelSelector: Optional label selector
+  - name: pods_get
+    description: Get a pod by namespace and name
+    params:
+      namespace: Namespace
+      name: Pod name
+  - name: pods_delete
+    description: Delete a pod
+    params:
+      namespace: Namespace
+      name: Pod name
+  - name: pods_log
+    description: Get logs from a pod
+    params:
+      namespace: Namespace
+      name: Pod name
+      container: Optional container name
+      previous: If true, return previous terminated container logs
+  - name: pods_top
+    description: Show CPU/memory usage metrics for pods
+    params:
+      namespace: Optional namespace (omit for all)
+      name: Optional pod name
+  - name: pods_exec
+    description: Execute a command in a running pod
+    params:
+      namespace: Namespace
+      name: Pod name
+      container: Optional container
+      command: Command to execute (array)
+  - name: pods_run
+    description: Run a container image as a pod
+    params:
+      namespace: Namespace
+      image: Container image
+      name: Optional pod name
+      port: Optional port to expose
+  - name: helm_install
+    description: Install a Helm chart
+    params:
+      chart: Chart reference (repo/chart or oci URL)
+      namespace: Target namespace
+      name: Release name
+      values: Optional values (YAML)
+  - name: helm_list
+    description: List Helm releases
+    params:
+      namespace: Optional namespace (omit for all)
+  - name: helm_uninstall
+    description: Uninstall a Helm release
+    params:
+      namespace: Namespace
+      name: Release name
+  - name: projects_list
+    description: List OpenShift Projects
